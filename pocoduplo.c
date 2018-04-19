@@ -6,31 +6,57 @@
 #define gamma 1
 #define beta 1
 #define b 1
-#define a 1
+#define a 1/4
+
+#define FRANDOM (rand()/(RAND_MAX+1.0))  
 
 double f(double x) {
 
 	return -4*a*pow(x,3) + 2*b*x;
 }
 
+double ngaussian(void){  //Numerical Recipes 
+  static int iset=0;
+  static double gset;
+  double fac,r,v1,v2;
+  
+  if (iset==0) {
+    do {
+      v1=2.0*FRANDOM-1.0;
+      v2=2.0*FRANDOM-1.0;
+      r=v1*v1+v2*v2;
+    } 
+    while (r>=1 || r==0.0);
+    fac=sqrt(-2.0*log(r)/r);
+    gset=v1*fac;
+    iset=1;
+    return v2*fac;
+  }
+  else {
+    iset=0;
+    return gset;
+  }
+}
+
+
 double dW(double dt) {
 
-	double r = rand();  
+	double r = ngaussian();  
 	return sqrt(dt) * r;
 
 }
 
 double main() {
 
-	int i; // passos de tempo
-	double x= 1, t, dt=0.01;
+	int i;
+	double x= 0, t=0, dt=0.01;
 	printf("%f\t%f\n", 0.0, x);
 	srand(time(NULL));
 
 	for(i=0;t<100;i++) {
 
-		t = dt*i;
 		x = (x + dt*f(x) + beta * dW(dt))/gamma;
+		t = dt*i;
 		printf("%f\t%e\n", t+dt, x);
 
 	}
