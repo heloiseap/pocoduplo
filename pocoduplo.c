@@ -5,8 +5,8 @@
 
 #define gamma 1
 #define beta 1
-#define b 1
-#define a 1/4
+#define b 1.0/2
+#define a 1.0/4
 
 #define FRANDOM (rand()/(RAND_MAX+1.0))  
 
@@ -49,15 +49,16 @@ double dW(double dt) {
 double main() {
 
 	int i;
-	double x= 0, t=0, dt=0.01;
+	double x= 0, t=0, dt=0.0/gamma;
+	double tp = t/gamma; //absorvendo gamma no t
 	printf("%f\t%f\n", 0.0, x);
 	srand(time(NULL));
 
-	for(i=0;t<100;i++) {
+	for(i=0;tp<100;i++) {
 
 		x = (x + dt*f(x) + beta * dW(dt))/gamma;
-		t = dt*i;
-		printf("%f\t%e\n", t+dt, x);
+		tp = dt*i;
+		printf("%f\t%e\n", tp+dt, x);
 
 	}
 

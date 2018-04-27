@@ -5,8 +5,8 @@
 
 #define gamma 1
 #define beta 1
-#define b 1
-#define a 1/4
+#define b 1.0/2
+#define a 1.0/4
 
 #define FRANDOM (rand()/(RAND_MAX+1.0))  
 
@@ -49,21 +49,22 @@ double dW(double dt) {
 double main() {
 
 	int i, n=0;
-	double x1=0, x2, t=0, dt=0.01, t1=0,T;
+	double x1=-1, x2, t=0, dt=0.01, t1=0,T,Tq;
 	srand(time(NULL));
 
 	for(i=0;t<100;i++) {
 
 		x2 = (x1 + dt*f(x1) + beta * dW(dt))/gamma;
-		t = dt*i;
+		t = dt*i/gamma;
 		
-    if(x1<0 && x2>0 || x1>0 && x2<0) { //se tiver mudança de sinal
+    if(x1*x2<0) { //se tiver mudança de sinal
       
       n++;
       T = t - t1; //tempo atual menos o tempo da antiga mudança de sinal
-      
-      printf("%d\t%f\n", n, T);
+      Tq = T*T;
+      printf("%d\t%f\t%f\n", n, T, Tq);
 
+      x1=-1;
       t1=t; //faz com que o tempo atual seja o começo do novo intervalo de contagem de periodos
 
     }
@@ -73,3 +74,4 @@ double main() {
 	}
 
 }
+
