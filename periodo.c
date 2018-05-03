@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define gamma 1
-#define beta 1
+#define beta sqrt(2*Temp)
 #define b 1.0/2
 #define a 1.0/4
 
@@ -48,30 +48,42 @@ double dW(double dt) {
 
 double main() {
 
-	int i, n=0;
-	double x1=-1, x2, t=0, dt=0.01, t1=0,T,Tq;
+	int i,h=0,n=100;
 	srand(time(NULL));
+  double T=0,Tq=0, Temp;
 
-	for(i=0;t<100;i++) {
+  for(Temp=0.05;Temp<=1.5;Temp+=0.01) {
 
-		x2 = (x1 + dt*f(x1) + beta * dW(dt))/gamma;
-		t = dt*i/gamma;
-		
-    if(x1*x2<0) { //se tiver mudança de sinal
-      
-      n++;
-      T = t - t1; //tempo atual menos o tempo da antiga mudança de sinal
-      Tq = T*T;
-      printf("%d\t%f\t%f\n", n, T, Tq);
+    double T=0, Tq=0;
+  
+  
+    for(h=1;h<=n;h++) { 
 
-      x1=-1;
-      t1=t; //faz com que o tempo atual seja o começo do novo intervalo de contagem de periodos
+      double x1=-1, x2, t=0, dt=0.01;
+
+    	for(i=0;;i++) { //n limitado pra sempre fazer 100 historias
+
+    		x2 = (x1 + dt*f(x1) + beta * dW(dt))/gamma;
+    		t = dt*i/gamma;
+    		
+        if(x1*x2<0) { //se tiver mudança de sinal
+          
+          T += t; //tempo atual menos o tempo da antiga mudança de sinal
+          Tq += pow(t,2);
+          break;
+        }
+
+        x1=x2;
+
+    	}
+
 
     }
 
-    x1=x2;
+    double erro = sqrt((Tq/n -pow(T/n,2))/n);
 
-	}
-
+    printf("%f\t%f\t%f\n", Temp, T/n, erro);
+  
+  }
 }
 
